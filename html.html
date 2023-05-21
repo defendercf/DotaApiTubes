@@ -1,3 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <style>
+    body {
+      background-color: gray;
+    }
+    h1 {
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 40px;
+      color: blue;
+    }
+    #request_name{
+      color: blue;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Dota 2 Account Check</h1>
+  <div>
+  </div>
+  <div data-label="image1"><img id ="img" class="img" src="img"></div>
+  <div id="request_name"></div>
+  <div data-label="image2"><img id ="rankimg"  class="img" src="img"></div>
+  <div id="request_rank"></div>
+
+  
+  <py-script>
+    from pyodide.http import pyfetch
+    import asyncio
+    from js import document
+    import base64
+    from pathlib import Path
+
+    img = ""
+    async def anjay():
+      response = await pyfetch(url="https://api.opendota.com/api/players/397152036?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e", method="GET")
+      response_dict = await response.json()
+      nick = response_dict['profile']['personaname']
+      ranktier = response_dict['rank_tier']
+      ppimg = response_dict['profile']['avatarfull']
+      return nick, ranktier, ppimg
+    async def main():
+      response_dict = await anjay()
+      ingameName = response_dict[0]
+      ranktier = response_dict[1]
+      rankimg = ""
+      firstLT = int(str(ranktier)[0])
+      secondLT = int(str(ranktier)[1])
       if firstLT == 1:
         ingameRank = "Herald "
         if secondLT == 1:
@@ -102,3 +156,59 @@
         ingameRank = "Immortal"
       else:
         ingameRank = "Unranked"
+      rank = f"Rank: {ingameRank}"
+      name = f"Nick: {ingameName}"
+
+      
+      pyscript.write('request_name', name)
+      pyscript.write('request_rank', rank)
+      img = None
+      rankimg = None
+      img = await process_response(response_dict[2])
+      rankimg = await process_response(rankimgurl)
+
+
+      document.querySelector('[data-label="image1"] img').setAttribute("src", img)
+      document.querySelector('[data-label="image2"] img').setAttribute("src", rankimg)
+      
+      return rankimgurl
+    asyncio.ensure_future(main())
+
+
+    async def download(url):
+            filename = None
+            response = ""
+            status = None
+            filename = Path(url).name
+            response = await pyfetch(url, method="GET")
+            if response.status == 200:
+                status = response.status
+                with open(filename, mode="wb") as file:
+                    file.write(await response.bytes())
+                    file.close()
+                return filename, status
+            else:
+                status = response.status
+                filename = None
+                return filename, status
+
+    async def process_response(url):
+            response_content = None
+            response_content = await loop.run_until_complete(
+                download(url)
+                )
+            if response_content[1] == 200:
+                data = base64.b64encode(open(response_content[0], "rb").read()).decode("utf-8")
+                src = f"data:image/png;base64,{data}"
+                return src
+                src = None
+            else:
+                src = None
+                return src
+                src = None
+
+    
+  </py-script>
+</body>
+
+</html>

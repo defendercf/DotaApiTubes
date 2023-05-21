@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <style>
+    body {
+      background-color: gray;
+    }
+    h1 {
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 40px;
+      color: blue;
+    }
+    #request_name{
+      color: blue;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Dota 2 Account Check</h1>
+  <div>
+  </div>
+  <div data-label="image1"><img id ="img" class="img" src="img"></div>
+  <div id="request_name"></div>
+  <div data-label="image2"><img id ="rankimg"  class="img" src="img"></div>
+  <div id="request_rank"></div>
+
+
+  
+
+  <py-script>
+    from pyodide.http import pyfetch
+    import asyncio
+    from js import document
+    import base64
+    from pathlib import Path
+    response_dict = ""
+    
+    async def anjay():
+      response = await pyfetch(url="https://api.opendota.com/api/players/353107861?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e", method="GET")
+      response_dict = await response.json()
+      nick = response_dict['profile']['personaname']
+      ranktier = response_dict['rank_tier']
+      ppimg = response_dict['profile']['avatarfull']
+      return response_dict
+    async def main():
+      response_dict = await anjay()
+      name = f"Nick: {response_dict}"
+
+
+      pyscript.write('request_name', response_dict)
+
+
+    asyncio.ensure_future(main())
+    async def download(url):
+            filename = Path(url).name
+            response = await pyfetch(url, method="GET")
+            if response.status == 200:
+                status = response.status
+                with open(filename, mode="wb") as file:
+                    file.write(await response.bytes())
+                return filename, status
+            else:
+                status = response.status
+                filename = None
+                return filename, status
+
+    async def process_response(url):
+            response_content = await loop.run_until_complete(
+                download(url)
+                )
+            if response_content[1] == 200:
+                data = base64.b64encode(open(response_content[0], "rb").read()).decode("utf-8")
+                src = f"data:image/png;base64,{data}"
+                return src
+            else:
+                src = None
+                return src
+
+    
+  </py-script>
+</body>
+
+</html>

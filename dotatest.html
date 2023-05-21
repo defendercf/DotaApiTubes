@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <title>Requests Tutorial</title>
+
+  <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+  <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+
+<body>
+  <div>
+  </div>
+  <input type="text" id="test-input"/>
+  <button id="submit-button" type="submit" py-click="my_function">OK</button>
+  <div id="test-output"></div>
+  <py-script>
+    from pyodide.http import pyfetch
+    import asyncio
+    from js import document
+    import base64
+    from pathlib import Path
+    async def my_function(*args, **kwargs):
+      response = await pyfetch(url="https://api.opendota.com/api/players/353107861?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e", method="GET")
+      response_dict = await response.json()
+  </py-script>
+</body>
+
+</html>
