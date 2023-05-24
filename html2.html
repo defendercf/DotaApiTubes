@@ -38,15 +38,17 @@
     from js import document
     import base64
     from pathlib import Path
+    import js
     response_dict = ""
     
     async def anjay():
+      accountID = js.localStorage.getItem('accountID')
       response = await pyfetch(url="https://api.opendota.com/api/players/353107861?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e", method="GET")
       response_dict = await response.json()
       nick = response_dict['profile']['personaname']
       ranktier = response_dict['rank_tier']
       ppimg = response_dict['profile']['avatarfull']
-      return response_dict
+      return accountID
     async def main():
       response_dict = await anjay()
       name = f"Nick: {response_dict}"

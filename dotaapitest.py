@@ -4,10 +4,22 @@ import requests as req
 from PIL import ImageTk, Image
 import os
 from io import BytesIO
+import steamid
+import steamid_converter.Converter as Converter
+
 api_key = "bca71228-5abf-4825-8ff5-ea2ce7afb60e"
 def accessID():
-  accountid = entry1.get()
-  api_url = f"https://api.opendota.com/api/players/{accountid}?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e"
+  idinput = entry1.get()
+  id_api_url = f"http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=A2BE1B4A3BBC3A62B72C6096216AA9F9&vanityurl={idinput}"
+  respid = req.get(id_api_url)
+  print(respid.status_code)
+  id_json_data = respid.json()
+  print(id_json_data)
+  steamid64 = id_json_data['response']['steamid']
+  steamid3 = str(Converter.to_steamID3(steamid64))
+  steamid3 = steamid3[5:14]
+  print(steamid3)
+  api_url = f"https://api.opendota.com/api/players/{steamid3}?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e"
   print(api_url)
   resp = req.get(api_url)
   print(resp.status_code)

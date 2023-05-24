@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+  <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <style>
+    body {
+      background-color: gray;
+    }
+    h1 {
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 40px;
+      color: blue;
+    }
+    #request_name{
+      color: blue;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Dota 2 Account Check</h1>
+  <div>
+  </div>
+  <div data-label="image1"><img id ="img" class="img" src="img"></div>
+  <div id="request_name"></div>
+  <div data-label="image2"><img id ="rankimg"  class="img" src="img"></div>
+  <div id="request_rank"></div>
+
+  
+  <py-script>
+    from pyodide.http import pyfetch
+    import asyncio
+    from js import document
+    import base64
+    from pathlib import Path
+    import js
+
+    id = "183679013"
+    js.localStorage.setItem("accountID", id)
+
+  </py-script>
+</body>
+
+</html>

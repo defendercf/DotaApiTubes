@@ -36,10 +36,10 @@
     from js import document
     import base64
     from pathlib import Path
-
-    img = ""
+    import js
     async def anjay():
-      response = await pyfetch(url="https://api.opendota.com/api/players/397152036?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e", method="GET")
+      accountID = js.localStorage.getItem("accountID")
+      response = await pyfetch(url=f"https://api.opendota.com/api/players/{accountID}api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e", method="GET")
       response_dict = await response.json()
       nick = response_dict['profile']['personaname']
       ranktier = response_dict['rank_tier']
@@ -52,126 +52,144 @@
       rankimg = ""
       firstLT = int(str(ranktier)[0])
       secondLT = int(str(ranktier)[1])
-      if firstLT == 1:
-        ingameRank = "Herald "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/85/SeasonalRank1-1.png/revision/latest/scale-to-width-down/160?cb=20190130002445"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/e/ee/SeasonalRank1-2.png/revision/latest/scale-to-width-down/160?cb=20190130002448"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/0/05/SeasonalRank1-3.png/revision/latest/scale-to-width-down/160?cb=20190130002457"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/6d/SeasonalRank1-4.png/revision/latest/scale-to-width-down/160?cb=20190130002500"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/2/2b/SeasonalRank1-5.png/revision/latest/scale-to-width-down/160?cb=20190130002504"
-      elif firstLT == 2:
-        ingameRank = "Guardian "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/c/c7/SeasonalRank2-1.png/revision/latest/scale-to-width-down/160?cb=20190130002542"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/2/2c/SeasonalRank2-2.png/revision/latest/scale-to-width-down/160?cb=20190130002545"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/f/f5/SeasonalRank2-3.png/revision/latest/scale-to-width-down/160?cb=20190130002548"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/b/b4/SeasonalRank2-4.png/revision/latest/scale-to-width-down/160?cb=20190130002552"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/3/32/SeasonalRank2-5.png/revision/latest/scale-to-width-down/160?cb=20190130002555"
-      elif firstLT == 3:
-        ingameRank = "Crusader "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/82/SeasonalRank3-1.png/revision/latest/scale-to-width-down/160?cb=20190130002626"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/6e/SeasonalRank3-2.png/revision/latest/scale-to-width-down/160?cb=20190130002629"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/67/SeasonalRank3-3.png/revision/latest/scale-to-width-down/160?cb=20190130002632"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/87/SeasonalRank3-4.png/revision/latest/scale-to-width-down/160?cb=20190130002635"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-          rankimgurl = ""
-      elif firstLT == 4:
-        ingameRank = "Archon "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-          rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/7/76/SeasonalRank4-1.png/revision/latest/scale-to-width-down/160?cb=20190130002704"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-      elif firstLT == 5:
-        ingameRank = "Legend "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-      elif firstLT == 6:
-        ingameRank = "Ancient "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-      elif firstLT == 7:
-        ingameRank = "Divine "
-        if secondLT == 1:
-          ingameRank = ingameRank + "1"
-        elif secondLT == 2:
-          ingameRank = ingameRank + "2"
-        elif secondLT == 3:
-          ingameRank = ingameRank + "3"
-        elif secondLT == 4:
-          ingameRank = ingameRank + "4"
-        elif secondLT == 5:
-          ingameRank = ingameRank + "5"
-      elif firstLT == 8:
-        ingameRank = "Immortal"
+    if firstLT == 1:
+      ingameRank = "Herald "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/85/SeasonalRank1-1.png/revision/latest/scale-to-width-down/160?cb=20190130002445"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/e/ee/SeasonalRank1-2.png/revision/latest/scale-to-width-down/160?cb=20190130002448"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/0/05/SeasonalRank1-3.png/revision/latest/scale-to-width-down/160?cb=20190130002457"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/6d/SeasonalRank1-4.png/revision/latest/scale-to-width-down/160?cb=20190130002500"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/2/2b/SeasonalRank1-5.png/revision/latest/scale-to-width-down/160?cb=20190130002504"
+    elif firstLT == 2:
+      ingameRank = "Guardian "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/c/c7/SeasonalRank2-1.png/revision/latest/scale-to-width-down/160?cb=20190130002542"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/2/2c/SeasonalRank2-2.png/revision/latest/scale-to-width-down/160?cb=20190130002545"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/f/f5/SeasonalRank2-3.png/revision/latest/scale-to-width-down/160?cb=20190130002548"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/b/b4/SeasonalRank2-4.png/revision/latest/scale-to-width-down/160?cb=20190130002552"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/3/32/SeasonalRank2-5.png/revision/latest/scale-to-width-down/160?cb=20190130002555"
+    elif firstLT == 3:
+      ingameRank = "Crusader "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/82/SeasonalRank3-1.png/revision/latest/scale-to-width-down/160?cb=20190130002626"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/6e/SeasonalRank3-2.png/revision/latest/scale-to-width-down/160?cb=20190130002629"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/67/SeasonalRank3-3.png/revision/latest/scale-to-width-down/160?cb=20190130002632"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/87/SeasonalRank3-4.png/revision/latest/scale-to-width-down/160?cb=20190130002635"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = ""
+    elif firstLT == 4:
+      ingameRank = "Archon "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/7/76/SeasonalRank4-1.png/revision/latest/scale-to-width-down/160?cb=20190130002704"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/87/SeasonalRank4-2.png/revision/latest/scale-to-width-down/160?cb=20190130002707"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/6/60/SeasonalRank4-3.png/revision/latest/scale-to-width-down/160?cb=20190130002710"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/4/4a/SeasonalRank4-4.png/revision/latest/scale-to-width-down/160?cb=20190130002714"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/a/a3/SeasonalRank4-5.png/revision/latest/scale-to-width-down/160?cb=20190130002718"
+    elif firstLT == 5:
+      ingameRank = "Legend "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/7/79/SeasonalRank5-1.png/revision/latest/scale-to-width-down/160?cb=20190130002757"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/5/52/SeasonalRank5-2.png/revision/latest/scale-to-width-down/160?cb=20190130002839"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/88/SeasonalRank5-3.png/revision/latest/scale-to-width-down/160?cb=20190130002819"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/2/25/SeasonalRank5-4.png/revision/latest/scale-to-width-down/160?cb=20190130002822"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/8e/SeasonalRank5-5.png/revision/latest/scale-to-width-down/160?cb=20190130002826"
+    elif firstLT == 6:
+      ingameRank = "Ancient "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/e/e0/SeasonalRank6-1.png/revision/latest/scale-to-width-down/160?cb=20190130002941"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/1/1c/SeasonalRank6-2.png/revision/latest/scale-to-width-down/160?cb=20190130002945"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/d/da/SeasonalRank6-3.png/revision/latest/scale-to-width-down/160?cb=20190130002948"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/d/db/SeasonalRank6-4.png/revision/latest/scale-to-width-down/160?cb=20190130002951"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/4/47/SeasonalRank6-5.png/revision/latest/scale-to-width-down/160?cb=20190130002955"
+    elif firstLT == 7:
+      ingameRank = "Divine "
+      if secondLT == 1:
+        ingameRank = ingameRank + "1"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/b/b7/SeasonalRank7-1.png/revision/latest/scale-to-width-down/160?cb=20190130003022"
+      elif secondLT == 2:
+        ingameRank = ingameRank + "2"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/8/8f/SeasonalRank7-2.png/revision/latest/scale-to-width-down/160?cb=20190130003026"
+      elif secondLT == 3:
+        ingameRank = ingameRank + "3"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/f/fd/SeasonalRank7-3.png/revision/latest/scale-to-width-down/160?cb=20190130003029"
+      elif secondLT == 4:
+        ingameRank = ingameRank + "4"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/1/13/SeasonalRank7-4.png/revision/latest/scale-to-width-down/160?cb=20190130003033"
+      elif secondLT == 5:
+        ingameRank = ingameRank + "5"
+        rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/3/33/SeasonalRank7-5.png/revision/latest/scale-to-width-down/160?cb=20190130003041"
+    elif firstLT == 8:
+      ingameRank = "Immortal"
+      rankimgurl = "https://static.wikia.nocookie.net/dota2_gamepedia/images/f/f2/SeasonalRankTop0.png/revision/latest/scale-to-width-down/160?cb=20180606220529"
+
       else:
         ingameRank = "Unranked"
       rank = f"Rank: {ingameRank}"
       name = f"Nick: {ingameName}"
 
+      img = await process_response(response_dict[2])
+      rankimg = await process_response(rankimgurl)
       
       pyscript.write('request_name', name)
       pyscript.write('request_rank', rank)
-      img = None
-      rankimg = None
-      img = await process_response(response_dict[2])
-      rankimg = await process_response(rankimgurl)
-
+      
 
       document.querySelector('[data-label="image1"] img').setAttribute("src", img)
       document.querySelector('[data-label="image2"] img').setAttribute("src", rankimg)
       
-      return rankimgurl
     asyncio.ensure_future(main())
 
 
@@ -183,6 +201,9 @@
             response = await pyfetch(url, method="GET")
             if response.status == 200:
                 status = response.status
+                with open(filename, mode="wb") as file:
+                    file.write("")
+                    file.close()
                 with open(filename, mode="wb") as file:
                     file.write(await response.bytes())
                     file.close()
@@ -201,11 +222,10 @@
                 data = base64.b64encode(open(response_content[0], "rb").read()).decode("utf-8")
                 src = f"data:image/png;base64,{data}"
                 return src
-                src = None
+
             else:
                 src = None
                 return src
-                src = None
 
     
   </py-script>
