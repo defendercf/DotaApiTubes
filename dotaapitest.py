@@ -1,15 +1,18 @@
-import tkinter as tk
-from tkinter import ttk
-import requests as req
-from PIL import ImageTk, Image
 import os
+import re
+import threading
+import time
+import tkinter as tk
+from distutils.errors import UnknownFileError
 from io import BytesIO
+from tkinter import ttk
+
+import pyttsx3
+import requests as req
+import speech_recognition as sr
 import steamid_converter.Converter as Converter
 from gtts import gTTS
-import speech_recognition as sr
-import os
-import pyttsx3
-import re
+from PIL import Image, ImageTk
 
 api_key = "bca71228-5abf-4825-8ff5-ea2ce7afb60e"
 
@@ -21,7 +24,11 @@ def say(text1):
      speech = gTTS(text = text1, lang = language, slow = False)
      speech.save("text.mp3")
      os.system("start text.mp3")
-     
+
+def clear_frame():
+   for widgets in entry_frame.winfo_children():
+      widgets.destroy()
+
 def talk(text1):
   engine = pyttsx3.init()
   voice = engine.getProperty('voices')
@@ -31,66 +38,87 @@ def talk(text1):
   engine.runAndWait()
   
 def speechrecogID():
-  while True:
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-      # read the audio data from the default microphone
-      label1.config(text="Please talk")
-      talk("Please Start Talking in 4 second")
-      audio_data = r.record(source, duration=10)
-      label1.config(text="Recognizing Voice....")
-      text = r.recognize_google(audio_data)
-      text = text.lower()
-      text = re.sub(r'[^0-9]', '', text)
-      text = remove(text)
-      talk(f"Are you saying {text}")
-      print(text)
-      label1.config(text="-")
-      talk("Please confirm your text with yes or no in 3 second")
-      audio_data = r.record(source, duration=5)
-      label1.config(text="Recognizing Voice....")
-      text2 = r.recognize_google(audio_data)
-      text2 = text2.lower()
-      print(text)
-      if "yes" in text2:
+  try:
+    while True:
+      r = sr.Recognizer()
+      with sr.Microphone() as source:
+        # read the audio data from the default microphone
+        label1.config(text="")
+        label1.config(text="Please talk")
+        talk("Please Say your ID in 3 second")
+        audio_data = r.record(source, duration=8)
+        talk("Time up")
+        label1.config(text="")
+        label1.config(text="Time Up")
+        # audio_data = r.listen(source)
+        label1.config(text="")
+        label1.config(text="Recognizing Voice....")
+        text = r.recognize_google(audio_data)
+        text = text.lower()
+        text = re.sub(r'[^0-9]', '', text)
         text = remove(text)
-        talk(f"You are saying {text}")
-        label1.config(text=f"You are saying {text}")
-        return text
-        break
-      elif "no" in text2:
-        continue
-      
+        talk(f"Are you saying {text}")
+        print(text)
+        label1.config(text="")
+        label1.config(text=f"Are you saying {text}")
+        talk("Please confirm your text with yes or no in 2 second")
+        audio_data = r.record(source, duration=3)
+        label1.config(text="")
+        label1.config(text="Recognizing Voice....")
+        text2 = r.recognize_google(audio_data)
+        text2 = text2.lower()
+        print(text)
+        if "yes" in text2:
+          text = remove(text)
+          talk(f"You are saying {text}")
+          label1.config(text="")
+          label1.config(text=f"You are saying {text}")
+          return text
+        elif "no" in text2:
+          label1.config(text="Repeating!")
+          talk("Repeating")
+          continue
+  except sr.UnknownValueError:
+    label1.config(text="")
+    label1.config(text="Error Has Occured")
+    talk("Error Has Occured")
+        
 def speechrecog():
-  while True:
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-      # read the audio data from the default microphone
-      label1.config(text="Please talk")
-      talk("Please Start Talking in 4 second")
-      audio_data = r.record(source, duration=10)
-      label1.config(text="Recognizing Voice....")
-      text = r.recognize_google(audio_data)
-      text = text.lower()
-      text = remove(text)
-      print(text)
-      talk(f"Are you saying {text}")
-      label1.config(text="-")
-      talk("Please confirm your text with yes or no in 3 second")
-      audio_data = r.record(source, duration=5)
-      label1.config(text="Recognizing Voice....")
-      text2 = r.recognize_google(audio_data)
-      text2 = text2.lower()
-      if "yes" in text2:
-        text = remove(text)
-        talk(f"You are saying {text}")
-        label1.config(text=f"You are saying {text}")
-        return text
-        break
-      elif "no" in text2:
-        continue
+  try:
+    while True:
+      r = sr.Recognizer()
+      with sr.Microphone() as source:
+        # read the audio data from the default microphone
+        label1.config(text="Please talk")
+        talk("Please Start Talking in 3 second")
+        audio_data = r.record(source, duration=6)
+        label1.config(text="Recognizing Voice....")
+        text = r.recognize_google(audio_data)
+        text = text.lower()
+        print(text)
+        talk(f"Are you saying {text}")
+        label1.config(text="-")
+        talk("Please confirm your text with yes or no in 2 second")
+        audio_data = r.record(source, duration=3)
+        label1.config(text="Recognizing Voice....")
+        text2 = r.recognize_google(audio_data)
+        text2 = text2.lower()
+        if "yes" in text2:
+          talk(f"You are saying {text}")
+          label1.config(text=f"You are saying {text}")
+          return text
+          break
+        elif "no" in text2:
+          label1.config(text="Repeating!")
+          talk("Repeating")
+          continue
+  except:
+    label1.config(text="")
+    label1.config(text="Error Has Occured")
+    talk("Error Has Occured")
 
 def accessID():
+  clear_frame()
   idinput = entry1.get()
   id_api_url = f"http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=A2BE1B4A3BBC3A62B72C6096216AA9F9&vanityurl={idinput}"
   respid = req.get(id_api_url)
@@ -101,6 +129,7 @@ def accessID():
   steamid3 = str(Converter.to_steamID3(steamid64))
   steamid3 = steamid3[5:14]
   print(steamid3)
+  
   api_url = f"https://api.opendota.com/api/players/{steamid3}?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e"
   print(api_url)
   resp = req.get(api_url)
@@ -108,18 +137,34 @@ def accessID():
   json_data = resp.json()
   print(json_data)
   
+  api_url2 = f"https://api.opendota.com/api/players/{steamid3}/wl"
+  print(api_url2)
+  resp2 = req.get(api_url2)
+  print(resp2.status_code)
+  json_data2 = resp2.json()
+  print(json_data2)
+  winrate = ""
+  win = json_data2["win"]
+  lose = json_data2["lose"]
+  if win == 0 or lose == 0:
+    winrate = "N/A"
+  else:
+    total = win + lose
+    winrate = (win/total)*100
+    winrate = f"{round(winrate,2)} %"
+    winrate = f"{winrate}\n{win}/{total} games"
+  
   img_url = json_data['profile']['avatarfull']
   response = req.get(img_url)
   img_data1 = response.content
   img1 = ImageTk.PhotoImage(Image.open(BytesIO(img_data1)))
 
-  entry_frame = ttk.Labelframe()
-  entry_frame.pack(side=tk.RIGHT,pady=50,padx=50)
+
     # Username Entry
   photo1 = ttk.Label(entry_frame, image=img1)
   photo1.grid(row=0,column=0,padx=5,pady=5,sticky=tk.W)
   nicknamedata = json_data['profile']['personaname']
-  nickname = ttk.Label(entry_frame,text=f"Nick :\n  {nicknamedata}")
+  nickname = ttk.Label(entry_frame,text=f"Nick :\n{nicknamedata}")
   nickname.grid(row=0,column=1,padx=5,pady=5)
   ranktier= json_data['rank_tier']
   if ranktier == None:
@@ -257,13 +302,18 @@ def accessID():
   img2 = ImageTk.PhotoImage(Image.open(BytesIO(img_data2)))
   photo2 = ttk.Label(entry_frame, image=img2)
   photo2.grid(row=1,column=0,padx=5,pady=5,sticky=tk.W)
-  rank = ttk.Label(entry_frame,text=f"Rank :\n  {ingameRank}")
+  rank = ttk.Label(entry_frame,text=f"Rank :\n{ingameRank}")
   rank.grid(row=1,column=1,padx=5,pady=5)
+  winrate = ttk.Label(entry_frame, text=f"Winrate : {winrate}")
+  winrate.grid(row=3,column=1,padx=5,pady=5)
   
   root.mainloop()
 
 def accessIDviaSpeech():
+  clear_frame
   text = speechrecogID()
+  print(text)
+  idinput = ''
   idinput = text 
   print(idinput)
   if len(idinput) == 9:
@@ -279,6 +329,7 @@ def accessIDviaSpeech():
     steamid3 = steamid3[5:14]
     print(steamid3)
   
+  #API for profile
   api_url = f"https://api.opendota.com/api/players/{steamid3}?api_key=bca71228-5abf-4825-8ff5-ea2ce7afb60e"
   print(api_url)
   resp = req.get(api_url)
@@ -286,18 +337,34 @@ def accessIDviaSpeech():
   json_data = resp.json()
   print(json_data)
   
+  #API for W/L
+  api_url2 = f"https://api.opendota.com/api/players/{steamid3}/wl"
+  print(api_url2)
+  resp2 = req.get(api_url2)
+  print(resp2.status_code)
+  json_data2 = resp2.json()
+  print(json_data2)
+  winrate = ""
+  win = json_data2["win"]
+  lose = json_data2["lose"]
+  if win == 0 or lose == 0:
+    winrate = "N/A"
+  else:
+    total = win + lose
+    winrate = (win/total)*100
+    winrate = f"{round(winrate,2)} %"
+    winratetotal = f"{winrate}\n{win}/{total} games"
+  
+  
   img_url = json_data['profile']['avatarfull']
   response = req.get(img_url)
   img_data1 = response.content
   img1 = ImageTk.PhotoImage(Image.open(BytesIO(img_data1)))
 
-  entry_frame = ttk.Labelframe()
-  entry_frame.pack(side=tk.RIGHT,pady=50,padx=50)
-    # Username Entry
   photo1 = ttk.Label(entry_frame, image=img1)
   photo1.grid(row=0,column=0,padx=5,pady=5,sticky=tk.W)
   nicknamedata = json_data['profile']['personaname']
-  nickname = ttk.Label(entry_frame,text=f"Nick :\n  {nicknamedata}")
+  nickname = ttk.Label(entry_frame,text=f"Nick :\n{nicknamedata}",font=('bold'))
   nickname.grid(row=0,column=1,padx=5,pady=5)
   ranktier= json_data['rank_tier']
   if ranktier == None:
@@ -435,42 +502,82 @@ def accessIDviaSpeech():
   img2 = ImageTk.PhotoImage(Image.open(BytesIO(img_data2)))
   photo2 = ttk.Label(entry_frame, image=img2)
   photo2.grid(row=1,column=0,padx=5,pady=5,sticky=tk.W)
-  rank = ttk.Label(entry_frame,text=f"Rank :\n  {ingameRank}")
+  rank = ttk.Label(entry_frame,text=f"Rank :\n{ingameRank}",font=('bold'))
   rank.grid(row=1,column=1,padx=5,pady=5)
-  
-  talk("With the choice of data of 1 Nickname or 2 Dota Rank or 3 All of them, please say the number")
-  dataasked = speechrecogID()
-  if "1" in dataasked:
+  winratedata = ttk.Label(entry_frame, text=f"Winrate : {winratetotal}",font=('bold'))
+  winratedata.grid(row=3,column=1,padx=5,pady=5)
+  talk("With the choice of data of 1 Nickname 2 Dota Rank 3 Winrate or 4 All of them , please say the number")
+  dataasked = speechrecog()
+  if "1" in dataasked or "one" in dataasked:
     textdata = f"Your Steam nickname is {nicknamedata}"
     talk(textdata)
-  elif "2" in dataasked:
+  elif "2" in dataasked or "two" in dataasked:
     textdata = f"Your Dota 2 rank is {ingameRank}"
     talk(textdata)
-  elif "3" in dataasked:
-    textdata = f"Your Steam nickname is {nicknamedata} and your dota 2 rank is {ingameRank}"
+  elif "3" in dataasked or "three" in dataasked:
+    textdata = f"Your Dota 2 Lifetime Win Rate is {winrate} with {win} Win out of {total} Games"
+    print(textdata)
     talk(textdata)
+  elif "4" in dataasked or "four" in dataasked:
+    textdata = f"Your Steam nickname is {nicknamedata} your dota 2 rank is {ingameRank} and your winrate is {winrate}"
+    talk(textdata)
+  else:
+    talk("Speech Program has Ended")
   
   root.mainloop()
   
 
+try:
+  
+  root = tk.Tk()
+  root.title("Tracker")
+  iconpng = tk.PhotoImage(file = "dotaicon.png")
+  root.iconphoto(False, iconpng)
+  root.geometry("800x650")
+  
+  # set minimum window size value
+  root.minsize(800, 650)
+  root.configure(bg='gray')
+  # set maximum window size value
+  root.maxsize(800, 650)
+  label = tk.Label(root,text="DOTA 2 ACCOUNT TRACKER",font=('Trajan Pro Bold', 26,'bold'),bg='gray')
+  label.grid(row=0,column=0)
+  entry_frame0 = ttk.Labelframe(root,width=800,height=150)
+  # entry_frame0.pack(side=tk.TOP,pady=50,padx=50)
+  entry_frame0.grid(row=1,column=0)
+  entry_frame0.rowconfigure(9)
+  entry_frame0.columnconfigure(9)
+  entry_frame0.grid_propagate(0)
+  entry_frame0.pack_propagate(0)
+  # canvas1 = tk.Canvas(root, width=400, height=300)
+  # canvas1.pack(side=tk.LEFT)
+  entry1 = tk.Entry(entry_frame0) 
+  entry1.grid(row=0,column=1,padx=5,pady=5)
+  # canvas1.create_window(200, 80, window=entry1)
+  button1 = tk.Button(entry_frame0,text='Check ID!', command=accessID)
+  button1.grid(row=1,column=1,padx=5,pady=5)
+  # canvas1.create_window(200, 120, window=button1)
+  label1 = tk.Label(entry_frame0,text='',width=50)
+  label1.grid(row=0,column=3,padx=5,pady=5)
+  label2 = tk.Label(entry_frame0,text='Status:')
+  label2.grid(row=0,column=2,padx=5,pady=5)
+  # canvas1.create_window(200, 200, window=label1)
+  button2 = tk.Button(entry_frame0,text='Speech', command=accessIDviaSpeech)
+  button2.grid(row=2,column=1,padx=5,pady=5)
+  # canvas1.create_window(200, 160, window=button2)
+  entry_frame = ttk.Labelframe(root,width=800,height=500)
+  # entry_frame.pack(pady=75,padx=50)
+  entry_frame.grid(row=2,column=0)
+  entry_frame.rowconfigure(9)
+  entry_frame.columnconfigure(9)
+  entry_frame.grid_propagate(0)
+  entry_frame.pack_propagate(0)
 
-root = tk.Tk()
-
-
-canvas1 = tk.Canvas(root, width=400, height=300)
-canvas1.pack(side=tk.LEFT)
-entry1 = tk.Entry(root) 
-canvas1.create_window(200, 80, window=entry1)
-button1 = tk.Button(text='Check ID!', command=accessID)
-canvas1.create_window(200, 120, window=button1)
-label1 = tk.Label(text='yessir')
-canvas1.create_window(200, 200, window=label1)
-button2 = tk.Button(text='Speech', command=accessIDviaSpeech)
-canvas1.create_window(200, 160, window=button2)
-# frame1 = tk.Frame(root, highlightbackground="blue", highlightthickness=2)
-# frame1.pack(padx=20, pady=20)
-# Entry1
-root.mainloop()
-
+  # frame1 = tk.Frame(root, highlightbackground="blue", highlightthickness=2)
+  # frame1.pack(padx=20, pady=20)
+  # Entry1
+  root.mainloop()
+except:
+  pass
 
 
