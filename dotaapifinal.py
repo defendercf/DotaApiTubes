@@ -1,12 +1,9 @@
-import os
 import re
-import threading
-import time
 import tkinter as tk
-from distutils.errors import UnknownFileError
 from io import BytesIO
 from tkinter import ttk
 
+import customtkinter as ctk
 import pyttsx3
 import requests as req
 import speech_recognition as sr
@@ -16,17 +13,14 @@ from PIL import Image, ImageTk
 
 api_key = "bca71228-5abf-4825-8ff5-ea2ce7afb60e"
 
+def change_appearance_mode_event(new_appearance_mode: str):
+  ctk.set_appearance_mode(new_appearance_mode)
+
 def remove(string):
     return string.replace(" ", "")
 
-def say(text1):
-     language = 'en'
-     speech = gTTS(text = text1, lang = language, slow = False)
-     speech.save("text.mp3")
-     os.system("start text.mp3")
-
 def clear_frame():
-   for widgets in entry_frame.winfo_children():
+   for widgets in data_frame.winfo_children():
       widgets.destroy()
 
 def talk(text1):
@@ -42,45 +36,44 @@ def speechrecogID():
     while True:
       r = sr.Recognizer()
       with sr.Microphone() as source:
-        # read the audio data from the default microphone
-        label1.config(text="")
-        label1.config(text="Please talk")
+        label1.configure(text="")
+        label1.configure(text="Please talk")
         talk("Please Say your ID in 3 second")
         audio_data = r.record(source, duration=8)
         talk("Time up")
-        label1.config(text="")
-        label1.config(text="Time Up")
+        label1.configure(text="")
+        label1.configure(text="Time Up")
         # audio_data = r.listen(source)
-        label1.config(text="")
-        label1.config(text="Recognizing Voice....")
+        label1.configure(text="")
+        label1.configure(text="Recognizing Voice....")
         text = r.recognize_google(audio_data)
         text = text.lower()
         text = re.sub(r'[^0-9]', '', text)
         text = remove(text)
         talk(f"Are you saying {text}")
         print(text)
-        label1.config(text="")
-        label1.config(text=f"Are you saying {text}")
+        label1.configure(text="")
+        label1.configure(text=f"Are you saying {text}")
         talk("Please confirm your text with yes or no in 2 second")
         audio_data = r.record(source, duration=3)
-        label1.config(text="")
-        label1.config(text="Recognizing Voice....")
+        label1.configure(text="")
+        label1.configure(text="Recognizing Voice....")
         text2 = r.recognize_google(audio_data)
         text2 = text2.lower()
         print(text)
         if "yes" in text2:
           text = remove(text)
           talk(f"You are saying {text}")
-          label1.config(text="")
-          label1.config(text=f"You are saying {text}")
+          label1.configure(text="")
+          label1.configure(text=f"You are saying {text}")
           return text
         elif "no" in text2:
-          label1.config(text="Repeating!")
+          label1.configure(text="Repeating!")
           talk("Repeating")
           continue
   except sr.UnknownValueError:
-    label1.config(text="")
-    label1.config(text="Error Has Occured")
+    label1.configure(text="")
+    label1.configure(text="Error Has Occured")
     talk("Error Has Occured")
         
 def speechrecog():
@@ -88,33 +81,32 @@ def speechrecog():
     while True:
       r = sr.Recognizer()
       with sr.Microphone() as source:
-        # read the audio data from the default microphone
-        label1.config(text="Please talk")
+        label1.configure(text="Please talk")
         talk("Please Start Talking in 3 second")
         audio_data = r.record(source, duration=6)
-        label1.config(text="Recognizing Voice....")
+        label1.configure(text="Recognizing Voice....")
         text = r.recognize_google(audio_data)
         text = text.lower()
         print(text)
         talk(f"Are you saying {text}")
-        label1.config(text="-")
+        label1.configure(text="-")
         talk("Please confirm your text with yes or no in 2 second")
         audio_data = r.record(source, duration=3)
-        label1.config(text="Recognizing Voice....")
+        label1.configure(text="Recognizing Voice....")
         text2 = r.recognize_google(audio_data)
         text2 = text2.lower()
         if "yes" in text2:
           talk(f"You are saying {text}")
-          label1.config(text=f"You are saying {text}")
+          label1.configure(text=f"You are saying {text}")
           return text
           break
         elif "no" in text2:
-          label1.config(text="Repeating!")
+          label1.configure(text="Repeating!")
           talk("Repeating")
           continue
   except:
-    label1.config(text="")
-    label1.config(text="Error Has Occured")
+    label1.configure(text="")
+    label1.configure(text="Error Has Occured")
     talk("Error Has Occured")
 
 def accessID():
@@ -137,6 +129,8 @@ def accessID():
   json_data = resp.json()
   print(json_data)
   
+  
+  
   api_url2 = f"https://api.opendota.com/api/players/{steamid3}/wl"
   print(api_url2)
   resp2 = req.get(api_url2)
@@ -153,18 +147,58 @@ def accessID():
     winrate = (win/total)*100
     winrate = f"{round(winrate,2)} %"
     winrate = f"{winrate}\n{win}/{total} games"
+    
+  api_url3 = f"https://api.opendota.com/api/players/{steamid3}/heroes"
+  print(api_url3)
+  resp3 = req.get(api_url3)
+  print(resp3.status_code)
+  json_data3 = resp3.json()
+  print(json_data3)
+  games1 = json_data3[0]['games']
+  games2 = json_data3[1]['games']
+  hero_id1 = int(json_data3[0]['hero_id'])
+  hero_id2 = int(json_data3[1]['hero_id'])
   
+  api_url4 = f"https://api.opendota.com/api/heroes"
+  print(api_url4)
+  resp4 = req.get(api_url4)
+  print(resp4.status_code)
+  json_data4 = resp4.json()
+  print(json_data4)
+  
+  api_url5 = f"https://api.opendota.com/api/players/{steamid3}/recentMatches"
+  print(api_url5)
+  resp5 = req.get(api_url5)
+  print(resp5.status_code)
+  json_data5 = resp5.json()
+  print(json_data5)
+  
+  
+  lastplayedhero_id = json_data5[0]['hero_id']
+  
+
+  lastplayedkill = json_data5[0]['kills']
+  lastplayeddeaths = json_data5[0]['deaths']
+  lastplayedassist = json_data5[0]['assists']
+  lastplayedkda = f"{lastplayedkill}/{lastplayeddeaths}/{lastplayedassist}"
+  lastplayedindex = next((index for (index, d) in enumerate(json_data4) if d["id"] == lastplayedhero_id), None)
+  index_hero_id1 = next((index for (index, d) in enumerate(json_data4) if d["id"] == hero_id1), None)
+  index_hero_id2 = next((index for (index, d) in enumerate(json_data4) if d["id"] == hero_id2), None)
+  hero_name1 = json_data4[index_hero_id1]['localized_name']
+  hero_name2 = json_data4[index_hero_id2]['localized_name']
+  lastplayedhero_name = json_data4[lastplayedindex]['localized_name']
+
   img_url = json_data['profile']['avatarfull']
   response = req.get(img_url)
   img_data1 = response.content
-  img1 = ImageTk.PhotoImage(Image.open(BytesIO(img_data1)))
+  img1 = ctk.CTkImage(Image.open(BytesIO(img_data1)),size=(150, 150))
 
 
     # Username Entry
-  photo1 = ttk.Label(entry_frame, image=img1)
+  photo1 = ctk.CTkLabel(data_frame, image=img1,text='')
   photo1.grid(row=0,column=0,padx=5,pady=5,sticky=tk.W)
   nicknamedata = json_data['profile']['personaname']
-  nickname = ttk.Label(entry_frame,text=f"Nick :\n{nicknamedata}")
+  nickname = ctk.CTkLabel(data_frame,text=f"Nickname :\n{nicknamedata}")
   nickname.grid(row=0,column=1,padx=5,pady=5)
   ranktier= json_data['rank_tier']
   if ranktier == None:
@@ -299,13 +333,19 @@ def accessID():
 
   response = req.get(rankimgurl)
   img_data2 = response.content
-  img2 = ImageTk.PhotoImage(Image.open(BytesIO(img_data2)))
-  photo2 = ttk.Label(entry_frame, image=img2)
+  img2 = ctk.CTkImage(Image.open(BytesIO(img_data2)),size=(150, 150))
+  photo2 = ctk.CTkLabel(data_frame, image=img2,text='')
   photo2.grid(row=1,column=0,padx=5,pady=5,sticky=tk.W)
-  rank = ttk.Label(entry_frame,text=f"Rank :\n{ingameRank}")
+  rank = ctk.CTkLabel(data_frame,text=f"Rank :\n{ingameRank}")
   rank.grid(row=1,column=1,padx=5,pady=5)
-  winrate = ttk.Label(entry_frame, text=f"Winrate : {winrate}")
-  winrate.grid(row=3,column=1,padx=5,pady=5)
+  winrate = ctk.CTkLabel(data_frame, text=f"Winrate : {winrate}")
+  winrate.grid(row=2,column=1,padx=5,pady=5,)
+  lastplayed = ctk.CTkLabel(data_frame, text=f"Last Played Hero : \n{lastplayedhero_name}\nKDA : {lastplayedkda}")
+  lastplayed.grid(row=2,column=0,padx=5,pady=5,)
+  mostplayed1 = ctk.CTkLabel(data_frame, text=f"First Most Played Hero : \n{hero_name1}\nGames Played : {games1}")
+  mostplayed1.grid(row=3,column=0,padx=5,pady=5,)
+  mostplayed2 = ctk.CTkLabel(data_frame, text=f"First Most Played Hero : \n{hero_name2}\nGames Played : {games2}")
+  mostplayed2.grid(row=3,column=1,padx=5,pady=5,)
   
   root.mainloop()
 
@@ -337,7 +377,8 @@ def accessIDviaSpeech():
   json_data = resp.json()
   print(json_data)
   
-  #API for W/L
+  
+  
   api_url2 = f"https://api.opendota.com/api/players/{steamid3}/wl"
   print(api_url2)
   resp2 = req.get(api_url2)
@@ -353,18 +394,58 @@ def accessIDviaSpeech():
     total = win + lose
     winrate = (win/total)*100
     winrate = f"{round(winrate,2)} %"
-    winratetotal = f"{winrate}\n{win}/{total} games"
+    winrate = f"{winrate}\n{win}/{total} games"
+    
+  api_url3 = f"https://api.opendota.com/api/players/{steamid3}/heroes"
+  print(api_url3)
+  resp3 = req.get(api_url3)
+  print(resp3.status_code)
+  json_data3 = resp3.json()
+  print(json_data3)
+  games1 = json_data3[0]['games']
+  games2 = json_data3[1]['games']
+  hero_id1 = int(json_data3[0]['hero_id'])
+  hero_id2 = int(json_data3[1]['hero_id'])
+  
+  api_url4 = f"https://api.opendota.com/api/heroes"
+  print(api_url4)
+  resp4 = req.get(api_url4)
+  print(resp4.status_code)
+  json_data4 = resp4.json()
+  print(json_data4)
+  
+  api_url5 = f"https://api.opendota.com/api/players/{steamid3}/recentMatches"
+  print(api_url5)
+  resp5 = req.get(api_url5)
+  print(resp5.status_code)
+  json_data5 = resp5.json()
+  print(json_data5)
+  
+  
+  lastplayedhero_id = json_data5[0]['hero_id']
+  
+
+  lastplayedkill = json_data5[0]['kills']
+  lastplayeddeaths = json_data5[0]['deaths']
+  lastplayedassist = json_data5[0]['assists']
+  lastplayedkda = f"{lastplayedkill}/{lastplayeddeaths}/{lastplayedassist}"
+  lastplayedindex = next((index for (index, d) in enumerate(json_data4) if d["id"] == lastplayedhero_id), None)
+  index_hero_id1 = next((index for (index, d) in enumerate(json_data4) if d["id"] == hero_id1), None)
+  index_hero_id2 = next((index for (index, d) in enumerate(json_data4) if d["id"] == hero_id2), None)
+  hero_name1 = json_data4[index_hero_id1]['localized_name']
+  hero_name2 = json_data4[index_hero_id2]['localized_name']
+  lastplayedhero_name = json_data4[lastplayedindex]['localized_name']
   
   
   img_url = json_data['profile']['avatarfull']
   response = req.get(img_url)
   img_data1 = response.content
-  img1 = ImageTk.PhotoImage(Image.open(BytesIO(img_data1)))
+  img1 = ctk.CTkImage(Image.open(BytesIO(img_data1)),size=(150, 150))
 
-  photo1 = ttk.Label(entry_frame, image=img1)
+  photo1 = ctk.CTkLabel(data_frame, image=img1,text='')
   photo1.grid(row=0,column=0,padx=5,pady=5,sticky=tk.W)
   nicknamedata = json_data['profile']['personaname']
-  nickname = ttk.Label(entry_frame,text=f"Nick :\n{nicknamedata}")
+  nickname = ctk.CTkLabel(data_frame,text=f"Nickname :\n{nicknamedata}")
   nickname.grid(row=0,column=1,padx=5,pady=5)
   ranktier= json_data['rank_tier']
   if ranktier == None:
@@ -499,14 +580,20 @@ def accessIDviaSpeech():
 
   response = req.get(rankimgurl)
   img_data2 = response.content
-  img2 = ImageTk.PhotoImage(Image.open(BytesIO(img_data2)))
-  photo2 = ttk.Label(entry_frame, image=img2)
+  img2 = ctk.CTkImage(Image.open(BytesIO(img_data2)),size=(150, 150))
+  photo2 = ctk.CTkLabel(data_frame, image=img2,text='')
   photo2.grid(row=1,column=0,padx=5,pady=5,sticky=tk.W)
-  rank = ttk.Label(entry_frame,text=f"Rank :\n{ingameRank}")
+  rank = ctk.CTkLabel(data_frame,text=f"Rank :\n{ingameRank}")
   rank.grid(row=1,column=1,padx=5,pady=5)
-  winratedata = ttk.Label(entry_frame, text=f"Winrate : {winratetotal}")
-  winratedata.grid(row=3,column=1,padx=5,pady=5)
-  talk("With the choice of data of 1 Nickname 2 Dota Rank 3 Winrate or 4 All of them , please say the number")
+  winrate = ctk.CTkLabel(data_frame, text=f"Winrate : {winrate}")
+  winrate.grid(row=2,column=1,padx=5,pady=5,)
+  lastplayed = ctk.CTkLabel(data_frame, text=f"Last Played Hero : \n{lastplayedhero_name}\nKDA : {lastplayedkda}")
+  lastplayed.grid(row=2,column=0,padx=5,pady=5,)
+  mostplayed1 = ctk.CTkLabel(data_frame, text=f"First Most Played Hero : \n{hero_name1}\nGames Played : {games1}")
+  mostplayed1.grid(row=3,column=0,padx=5,pady=5,)
+  mostplayed2 = ctk.CTkLabel(data_frame, text=f"First Most Played Hero : \n{hero_name2}\nGames Played : {games2}")
+  mostplayed2.grid(row=3,column=1,padx=5,pady=5,)
+  talk("With the choice of data of 1 Nickname 2 Dota Rank 3 Winrate 4 Last Played Hero 5 Most Played Hero or 6 Profile , please say the number")
   dataasked = speechrecog()
   if "1" in dataasked or "one" in dataasked:
     textdata = f"Your Steam nickname is {nicknamedata}"
@@ -519,65 +606,62 @@ def accessIDviaSpeech():
     print(textdata)
     talk(textdata)
   elif "4" in dataasked or "four" in dataasked:
+    textdata = f"Your Last played hero is {lastplayedhero_name} with KDA of {lastplayedkill} {lastplayeddeaths} {lastplayedassist}"
+    print(textdata)
+    talk(textdata)
+  elif "5" in dataasked or "five" in dataasked:
+    textdata = f"Your Most played ero is {hero_name1} with {games1} Games"
+    print(textdata)
+    talk(textdata)
+  elif "6" in dataasked or "six" in dataasked:
     textdata = f"Your Steam nickname is {nicknamedata} your dota 2 rank is {ingameRank} and your winrate is {winrate}"
     talk(textdata)
   else:
     talk("Speech Program has Ended")
   
   root.mainloop()
-  
+root = ctk.CTk()
 
-try:
-  
-  root = tk.Tk()
-  root.title("Tracker")
-  iconpng = tk.PhotoImage(file = "dotaicon.png")
-  root.iconphoto(False, iconpng)
-  root.geometry("800x650")
-  
-  # set minimum window size value
-  root.minsize(800, 650)
-  root.configure(bg='gray')
-  # set maximum window size value
-  root.maxsize(800, 650)
-  label = tk.Label(root,text="DOTA 2 ACCOUNT TRACKER",font=('Trajan Pro Bold', 26,'bold'),bg='gray')
-  label.grid(row=0,column=0)
-  entry_frame0 = ttk.Labelframe(root,text="ID Entry :",width=800,height=150)
-  # entry_frame0.pack(side=tk.TOP,pady=50,padx=50)
-  entry_frame0.grid(row=1,column=0)
-  entry_frame0.rowconfigure(9)
-  entry_frame0.columnconfigure(9)
-  entry_frame0.grid_propagate(0)
-  entry_frame0.pack_propagate(0)
-  # canvas1 = tk.Canvas(root, width=400, height=300)
-  # canvas1.pack(side=tk.LEFT)
-  entry1 = tk.Entry(entry_frame0) 
-  entry1.grid(row=0,column=1,padx=5,pady=5)
-  # canvas1.create_window(200, 80, window=entry1)
-  button1 = tk.Button(entry_frame0,text='Check ID!', command=accessID)
-  button1.grid(row=1,column=1,padx=5,pady=5)
-  # canvas1.create_window(200, 120, window=button1)
-  label1 = tk.Label(entry_frame0,text='',width=50)
-  label1.grid(row=0,column=3,padx=5,pady=5)
-  label2 = tk.Label(entry_frame0,text='Status:')
-  label2.grid(row=0,column=2,padx=5,pady=5)
-  # canvas1.create_window(200, 200, window=label1)
-  button2 = tk.Button(entry_frame0,text='Speech', command=accessIDviaSpeech)
-  button2.grid(row=2,column=1,padx=5,pady=5)
-  # canvas1.create_window(200, 160, window=button2)
-  entry_frame = ttk.Labelframe(root,text="Data :",width=800,height=500)
-  # entry_frame.pack(pady=75,padx=50)
-  entry_frame.grid(row=2,column=0)
-  entry_frame.rowconfigure(9)
-  entry_frame.columnconfigure(9)
-  entry_frame.grid_propagate(0)
-  entry_frame.pack_propagate(0)
+root.grid_columnconfigure(1, weight=0)
 
-  # frame1 = tk.Frame(root, highlightbackground="blue", highlightthickness=2)
-  # frame1.pack(padx=20, pady=20)
-  # Entry1
-  root.mainloop()
-except:
-  pass
+root.title("Tracker")
+root.geometry("425x670")
+label = ctk.CTkLabel(root,text="DOTA 2 ACCOUNT TRACKER",font=('Trajan Pro Bold', 26,'bold'))
+# label.pack()
+label.grid(row=0,column=0)
+# entry_frame = ctk.CTkFrame(root,width=800,height=150,border_width=2,border_color='black')
+# entry_frame.pack(pady=5,padx=5)
+# entry_frame.grid(row=1,column=0)
+# entry_frame.grid_propagate(0)
+tabview = ctk.CTkTabview(root, width=400)
+tabview.grid(row=1,column=0)
+tabview.add("ID Input")
+tabview.add("Settings")
+tabview.tab("ID Input").grid_columnconfigure(0, weight=3)
+tabview.tab("Settings").grid_columnconfigure(0, weight=3)
+entry1 = ctk.CTkEntry(tabview.tab("ID Input")) 
+entry1.grid(row=0,column=0,padx=5,pady=5)
+button1 = ctk.CTkButton(tabview.tab("ID Input"),text='Check ID!', command=accessID,fg_color='#1e81b0',border_color="black",border_width=3,text_color='white')
+button1.grid(row=1,column=0,padx=5,pady=5)
+label1 = ctk.CTkLabel(tabview.tab("ID Input"),text='',width=20)
+label1.grid(row=4,column=0,padx=5,pady=1)
+label2 = ctk.CTkLabel(tabview.tab("ID Input"),text='Status:')
+label2.grid(row=3,column=0,padx=5,pady=1)
+button2 = ctk.CTkButton(tabview.tab("ID Input"),text='Speech', command=accessIDviaSpeech,fg_color='#1e81b0',border_color="black",border_width=3,text_color='white')
+button2.grid(row=2,column=0,padx=5,pady=5)
+appearance_mode_label = ctk.CTkLabel(tabview.tab("Settings"), text="Appearance Mode:", anchor="w")
+appearance_mode_label.grid(row=0, column=0, padx=20, pady=(10, 0))
+appearance_mode_optionemenu = ctk.CTkOptionMenu(tabview.tab("Settings"), values=["Light", "Dark"],
+                                                                    command=change_appearance_mode_event)
+appearance_mode_optionemenu.set("Dark")
+appearance_mode_optionemenu.grid(row=1, column=0, padx=20, pady=(10, 10))
+data_frame = ctk.CTkScrollableFrame(root,width=400,height=350,border_width=2,border_color='black')
+# data_frame.pack(pady=5,padx=5)
+data_frame.grid(row=2,column=0,pady=5)
+data_frame.grid_columnconfigure(1, weight=3)
+# data_frame.grid_propagate(0)
 
-
+# frame1 = tk.Frame(root, highlightbackground="blue", highlightthickness=2)
+# frame1.pack(padx=20, pady=20)
+# Entry1
+root.mainloop()
