@@ -310,7 +310,7 @@ def accessID():
   root.mainloop()
 
 def accessIDviaSpeech():
-  clear_frame
+  clear_frame()
   text = speechrecogID()
   print(text)
   idinput = ''
@@ -364,7 +364,7 @@ def accessIDviaSpeech():
   photo1 = ttk.Label(entry_frame, image=img1)
   photo1.grid(row=0,column=0,padx=5,pady=5,sticky=tk.W)
   nicknamedata = json_data['profile']['personaname']
-  nickname = ttk.Label(entry_frame,text=f"Nick :\n{nicknamedata}",font=('bold'))
+  nickname = ttk.Label(entry_frame,text=f"Nick :\n{nicknamedata}")
   nickname.grid(row=0,column=1,padx=5,pady=5)
   ranktier= json_data['rank_tier']
   if ranktier == None:
@@ -502,9 +502,9 @@ def accessIDviaSpeech():
   img2 = ImageTk.PhotoImage(Image.open(BytesIO(img_data2)))
   photo2 = ttk.Label(entry_frame, image=img2)
   photo2.grid(row=1,column=0,padx=5,pady=5,sticky=tk.W)
-  rank = ttk.Label(entry_frame,text=f"Rank :\n{ingameRank}",font=('bold'))
+  rank = ttk.Label(entry_frame,text=f"Rank :\n{ingameRank}")
   rank.grid(row=1,column=1,padx=5,pady=5)
-  winratedata = ttk.Label(entry_frame, text=f"Winrate : {winratetotal}",font=('bold'))
+  winratedata = ttk.Label(entry_frame, text=f"Winrate : {winratetotal}")
   winratedata.grid(row=3,column=1,padx=5,pady=5)
   talk("With the choice of data of 1 Nickname 2 Dota Rank 3 Winrate or 4 All of them , please say the number")
   dataasked = speechrecog()
